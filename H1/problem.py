@@ -102,14 +102,12 @@ class GridHunterProblem:
         for i in newmonsterCoords:
             monsterList.append(list(i))
         if timestep == 0:
-            for i in monsterList:
-                i[1] = i[1]-1
+            return newmonsterCoords
         elif timestep == 1:
             for i in monsterList:
                 i[1] = i[1]-1
         elif timestep == 2:
-            for i in monsterList:
-                i[1] = i[1]+1
+            return newmonsterCoords
         elif timestep == 3:
             for i in monsterList:
                 i[1] = i[1]+1
@@ -136,41 +134,38 @@ class GridHunterProblem:
     def result(self, state, action):
         stateList = list(state)
         mstep = (state[4] + 1)%4
-        self.monsterCoords = self.move_monsters(mstep)
+        newmonsterCoords = self.move_monsters(mstep)
         stateList[4] = mstep
         #self.state = tuple(stateList)
         if action == 'shoot-arrow':
             if stateList[2] == 'west':
                 i = 0
-                for monster in self.monsterCoords:
+                for monster in newmonsterCoords:
                     for arrow in range(stateList[1],0,-1):
                         if monster[0] == stateList[0] and monster[1] == arrow:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'east':
                 i = 0
-                for monster in self.monsterCoords:
+                for monster in newmonsterCoords:
                     for arrow in range(stateList[1], self.N+1):
                         if monster[0] == stateList[0] and monster[1] == arrow:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'north':
                 i = 0
-                for monster in self.monsterCoords:
+                for monster in newmonsterCoords:
                     for arrow in range(stateList[0], self.N+1):
                         if monster[0] == arrow and monster[1] == stateList[1]:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'south':
                 i = 0
-                for monster in self.monsterCoords:
+                for monster in newmonsterCoords:
                     for arrow in range(stateList[0], 0, -1):
                         if monster[0] == arrow and monster[1] == stateList[1]:
                             stateList[i+5] = True
                     i += 1
-            self.state = tuple(stateList)
-            newState = tuple(stateList)
-            return newState
 
         elif action == 'move-forward':
             if stateList[2] == 'north':
@@ -203,7 +198,7 @@ class GridHunterProblem:
                 stateList[2] = 'north'
 
         i = 0
-        for monster in self.monsterCoords:
+        for monster in newmonsterCoords:
             if monster[0] == stateList[0] and monster[1] == stateList[1] and stateList[i+5] == False:
                 stateList[3] = False
             i += 1
