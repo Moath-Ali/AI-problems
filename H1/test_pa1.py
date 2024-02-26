@@ -1,5 +1,5 @@
 from problem import *
-from H1.search_algorithms import *
+from search_algorithms import *
 from collections import Counter
 
 """
@@ -99,16 +99,22 @@ if __name__ == "__main__":
                                              N=5, 
                                              monster_coords=example_monster_coords)
     
-    example_state = (1, 2, 'north', 1, True, True, False)
+    example_state = (5, 5, 'north', True, 0, True, True, False)
     print('For GridHunterProblem. From state: {}. we have the following actions available:'.format(example_state))
     actions_available = example_grid_problem.actions(state=example_state)
     print(actions_available)
     print('For GridHunterProblem. From state: {}. Taking action: {}'.format(example_state, 'move-forward'))
     next_state = example_grid_problem.result(state=example_state, action='move-forward')
     print(next_state)
-    example_state = (5, 5, 'west', 3, False, False, False)
+    
+    example_state = (5, 5, 'west', True, 3, False, False, False)
     print('For GridHunterProblem. From state: {}. Taking action: {}'.format(example_state, 'shoot-arrow'))
     next_state = example_grid_problem.result(state=example_state, action='shoot-arrow')
+    print(next_state)
+    
+    example_state = (5, 1, 'north', True, 0, False, False, False)
+    print('For GridHunterProblem. From state: {}. Taking action: {}'.format(example_state, 'shoot-arrow'))
+    next_state = example_grid_problem.result(state=example_state, action='turn-left')
     print(next_state)
     print('________________________________________________________________________')
     

@@ -6,7 +6,7 @@ class Node:
         self.state = state
         self.parent_node = parent_node
         self.action_from_parent = action_from_parent
-        
+        self.path_cost = path_cost
         if parent_node==None:
             self.depth = 0
         else:
@@ -74,7 +74,8 @@ def get_path_states(node):
 
 def best_first_search(problem, f):
     node = Node(state=problem.state)
-    frontier = PriorityQueue(node,f)
+    frontier = PriorityQueue((),f)
+    frontier.add(node)
     reached = {problem.state:node}
     while len(frontier)>0:
         node = frontier.pop()

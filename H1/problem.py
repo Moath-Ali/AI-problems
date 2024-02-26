@@ -17,7 +17,8 @@ class VariantRouteProblem:
         nList =[]
         for key in self.map_edges:
             if state[0] in key: #to get the loc
-                nList.append(key) #this will return the neighbors
+                temp = list(key)
+                nList.append(temp[1]) #this will return the neighbors
         
         return nList
     
@@ -25,45 +26,19 @@ class VariantRouteProblem:
     #example_state = ('R', False, False, 1, True, False, False, False)
     #example_must_visit = ['R', 'H', 'T', 'Y']
     def result(self,state,action):
-        found =False
-        for i in self.actions(self.state):
-            if action in i:
-                found = True
-
-        if action == self.state[0]:
-
-            index = self.must_visit.index(action)
-            temp = list(self.state)
-            temp[3] += 1
-            temp[index+4] = True #to change the must visit location status
-            self.state = tuple(temp)
-            return self.state
-
-        elif found and action not in self.must_visit:
-            #add +1 to k and change to new state
-            temp = list(self.state)
-            temp[0]=action
-            temp[3] += 1
-            self.state = tuple(temp)
-            return self.state
-            
-        elif found and action in self.must_visit: #to check if the action in the must visit
-            #change must visit
-
-            index = self.must_visit.index(action)
-
-            temp = list(self.state)
-            temp[index+4] = True #to change the must visit location status
-            temp[0] = action
-            temp[3] += 1
-            self.state = tuple(temp)
-            return self.state
+        stateList = list(state)
+        stateList[0] = action
+        stateList[3] +=1
         
-        return self.state
+        if action in self.must_visit:
+           stateList[self.must_visit.index(action)+4] = True
         
-        #update the steps and the location
-
+        if action == self.goal_loc:
+            stateList[1] = True
     
+        return (stateList)
+
+
     def action_cost(self,state1,action,state2):
 
         temp0 = []
@@ -83,13 +58,13 @@ class VariantRouteProblem:
         elif temp1 in self.map_edges:
            return self.map_edges[temp1]
         else:
-            return "inf"
+            return 0
 
 
     def is_goal(self,state):
         s = self.state
         bol = True
-        for i in range(self.state-4):
+        for i in range(len(self.state)-4):
             if self.state[i+4] == False:
                 bol = False
 
