@@ -33,9 +33,12 @@ class VariantRouteProblem:
         if action in self.must_visit:
            stateList[self.must_visit.index(action)+4] = True
         
+        if action == self.goal_loc and state[1] == True:
+            stateList[2] = True
         if action == self.goal_loc:
             stateList[1] = True
-    
+
+
         return (stateList)
 
 
