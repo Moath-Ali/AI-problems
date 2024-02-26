@@ -12,10 +12,19 @@ example_map_edges = {
 ('Y', 'T'): 680
 }
 
-
+example_coords = {'A': (0,200),
+                      'B': (1250,600), 
+                      'D': (1300,550),
+                      'H': (500,850),
+                      'J': (100,450),
+                      'T': (0,1300),
+                      'R': (950,500),
+                      'Y': (50,750)
+                      }
 
 class VariantRouteProblem:
     def __init__(self,initial_agent_loc,goal_loc,map_edges,map_coords,must_visit,K):
+        self.initial_agent_loc = initial_agent_loc
         self.map_edges = map_edges
         self.map_coords = map_coords
         self.must_visit = must_visit
@@ -32,7 +41,7 @@ class VariantRouteProblem:
         nList =[]
         for key in self.map_edges:
             if state[0] in key: #to get the loc
-                nList.append(key[1]) #this will return the neighbors
+                nList.append(key) #this will return the neighbors
         
         return nList
     
@@ -40,20 +49,88 @@ class VariantRouteProblem:
     #example_state = ('R', False, False, 1, True, False, False, False)
     #example_must_visit = ['R', 'H', 'T', 'Y']
     def result(self,state,action):
-        if action == state[0]:
-            return
-        elif action in self.must_visit: #to check if the action in the must visit
+        found =False
+        for i in self.actions(self.state):
+            if action in i:
+                found = True
+
+        if action == self.state[0]:
+
             index = self.must_visit.index(action)
-            state[index+4] = True #to change the must visit location status
+            temp = list(self.state)
+            temp[3] += 1
+            temp[index+4] = True #to change the must visit location status
+            self.state = tuple(temp)
+            return self.state
+
+        elif found and action not in self.must_visit:
+            #add +1 to k and change to new state
+            temp = list(self.state)
+            temp[0]=action
+            temp[3] += 1
+            self.state = tuple(temp)
+            return self.state
+            
+        elif found and action in self.must_visit: #to check if the action in the must visit
+            #change must visit
+
+            index = self.must_visit.index(action)
+
+            temp = list(self.state)
+            temp[index+4] = True #to change the must visit location status
+            temp[0] = action
+            temp[3] += 1
+            self.state = tuple(temp)
+            return self.state
+        
+        return self.state
         
         #update the steps and the location
-        self.state[0] = action
-        self.state[3] += 1
 
-    def s(self):
-        return self.state
+    
+    def action_cost(self,state1,action,state2):
+
+        temp0 = []
+        temp0.append(state1[0])
+        temp0.append(state2[0])
+        temp0 = tuple(temp0)
+
+        temp1=[]
+        temp1.append(state2[0])
+        temp1.append(state1[0])
+        temp1 = tuple(temp1)
+
+
+        if temp0 in self.map_edges:
+            return self.map_edges[temp0]
+
+        elif temp1 in self.map_edges:
+           return self.map_edges[temp1]
+        else:
+            return "inf"
+
+
+    def is_goal(self,state):
+        s = self.state
+        bol = True
+        for i in range(self.state-4):
+            if self.state[i+4] == False:
+                bol = False
+
+        if s[0]==self.goal_loc and bol and s[1] and not s[2] and s[3]<=self.K:
+            return True
+        else:
+            return False
+    def h(self,node):
+        if(node.state[0]==node.goal_loc):
+            return 0
+        
+        else:
+            return (self.map_coords(node.state[0])[0]-self.map_coords(node.goal_loc)[0])**2 + (self.map_coords(node.state[0])[1]-self.map_coords(node.goal_loc)[1])**2
+
+
+
 
 
 
     
-        

@@ -1,5 +1,5 @@
 from problem import *
-from search_algorithms import *
+from H1.search_algorithms import *
 from collections import Counter
 
 """
