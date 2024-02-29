@@ -39,7 +39,7 @@ class VariantRouteProblem:
             stateList[1] = True
 
 
-        return (stateList)
+        return tuple(stateList)
 
 
     def action_cost(self,state1,action,state2):
@@ -80,7 +80,7 @@ class VariantRouteProblem:
             return 0
         
         else:
-            return (self.map_coords(node.state[0])[0]-self.map_coords(node.goal_loc)[0])**2 + (self.map_coords(node.state[0])[1]-self.map_coords(node.goal_loc)[1])**2
+            return ((self.map_coords(node.state[0])[0]-self.map_coords(node.goal_loc)[0])**2 + (self.map_coords(node.state[0])[1]-self.map_coords(node.goal_loc)[1])**2)**0.5
 
 class GridHunterProblem:
 
