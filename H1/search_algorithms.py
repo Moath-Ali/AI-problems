@@ -50,39 +50,58 @@ def expand(problem,node):
     for action in problem.actions(s0):
         s1 = problem.result(s0,action)
         cost = node.path_cost + problem.action_cost(s0,action,s1)
-        l.append(Node(s1,node,action,cost))
+        l.append(Node(state=s1,parent_node=node,action_from_parent=action,path_cost=cost))
 
     return l
 
 def get_path_actions(node):
     l = []
-    if(node == None or node.parent_node == None):
+    
+    tNode = node
+    if(tNode == None):
         return []
     else:
-        while node.parent_node != None:
-            l.insert(0,node.parent_node)
-        return l
+        while tNode.parent_node != None:
+            l.append(tNode.parent_node.state[0])
+            tNode = tNode.parent_node
+            if tNode == None:
+                l.append(tNode.state[0])
+
+        
+        l.reverse()
+        l.insert(len(l),node.state[0])
+        return l[1:]
     
 def get_path_states(node):
     l = []
-    if(node == None or node.parent_node == None):
+    
+    tNode = node
+    if(tNode == None):
         return []
     else:
-        while node.parent_node != None:
-            l.insert(0,node.parent_node.state)
+        while tNode.parent_node != None:
+            l.append(tNode.parent_node.state)
+            tNode = tNode.parent_node
+            if tNode == None:
+                l.append(tNode.state)
+
+        
+        l.reverse()
+        l.insert(len(l),node.state)
         return l
 
 def best_first_search(problem, f):
     node = Node(state=problem.state)
-    frontier = PriorityQueue(tuple(node),f)
+    frontier = PriorityQueue((),f)
+    frontier.add(node)
 
     reached = {problem.state:node}
     while len(frontier)>0:
         node = frontier.pop()
-
         if problem.is_goal(node.state):
+            
             return node
-        
+
         for child in expand(problem,node):
             s = child.state            
             if s not in reached.keys() or child.path_cost < reached[s].path_cost:
@@ -92,9 +111,11 @@ def best_first_search(problem, f):
 
 def best_first_search_treelike(problem,f):
     node = Node(state=problem.state)
-    frontier = PriorityQueue(node,f)
+    frontier = PriorityQueue((),f)
+    frontier.add(node)
     while len(frontier)>0:
         node = frontier.pop()
+
         if problem.is_goal(node.state):
             return node
         
@@ -104,32 +125,32 @@ def best_first_search_treelike(problem,f):
             frontier.add(child)
     return None
 
-def breadth_first_search(problem,treeLike=False):
-    if not treeLike:
-        best_first_search(problem,lambda n: n.depth)
+def breadth_first_search(problem,treelike=False):
+    if not treelike:
+        return best_first_search(problem,lambda n: n.depth)
     else:
-        best_first_search_treelike(problem,lambda n: n.depth)
+        return best_first_search_treelike(problem,lambda n: n.depth)
 
-def depth_first_search(problem,treeLike=False):
-    if not treeLike:
-        best_first_search(problem,lambda n:  0-n.depth)
+def depth_first_search(problem,treelike=False):
+    if not treelike:
+        return best_first_search(problem,lambda n:  0-n.depth)
     else:
-        best_first_search_treelike(problem,lambda n: 0-n.depth)
+        return best_first_search_treelike(problem,lambda n: 0-n.depth)
 
-def uniform_cost_search(problem,treeLike=False):
-    if not treeLike:
-        best_first_search(problem,lambda n: n.path_cost)
+def uniform_cost_search(problem,treelike=False):
+    if not treelike:
+        return best_first_search(problem,lambda n: n.path_cost)
     else:
-        best_first_search_treelike(problem,lambda n: n.path_cost)
+        return best_first_search_treelike(problem,lambda n: n.path_cost)
 
-def greedy_search(problem, h, treeLike=False):
-    if not treeLike:
-        best_first_search(problem,lambda n: h(n))
+def greedy_search(problem, h, treelike=False):
+    if not treelike:
+        return best_first_search(problem,lambda n: h(n))
     else:
-        best_first_search_treelike(problem,lambda n: h(n))
+        return best_first_search_treelike(problem,lambda n: h(n))
 
-def astar_search(problem, h, treeLike=False):
-    if not treeLike:
-        best_first_search(problem,lambda n: n.path_cost + problem.h(n))
+def astar_search(problem, h, treelike=False):
+    if not treelike:
+        return best_first_search(problem,lambda n: n.path_cost + h(n))
     else:
-        best_first_search_treelike(problem,lambda n: n.path_cost + problem.h(n))
+        return best_first_search_treelike(problem,lambda n: n.path_cost + h(n))

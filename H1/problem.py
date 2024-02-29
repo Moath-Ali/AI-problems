@@ -18,7 +18,11 @@ class VariantRouteProblem:
         for key in self.map_edges:
             if state[0] in key: #to get the loc
                 temp = list(key)
-                nList.append(temp[1]) #this will return the neighbors
+                if temp.index(state[0]) == 0:
+                    nList.append(temp[1]) #this will return the neighbors
+                else:
+                    nList.append(temp[0])
+                
         
         return nList
     
@@ -65,22 +69,21 @@ class VariantRouteProblem:
 
 
     def is_goal(self,state):
-        s = self.state
-        bol = True
-        for i in range(len(self.state)-4):
-            if self.state[i+4] == False:
-                bol = False
+        s = state
+        bol = state[4:].count(True)>=(len(state)-4)/2
 
         if s[0]==self.goal_loc and bol and s[1] and not s[2] and s[3]<=self.K:
             return True
         else:
             return False
+        
+
     def h(self,node):
-        if(node.state[0]==node.goal_loc):
+        if(self.is_goal(node.state)):
             return 0
         
         else:
-            return ((self.map_coords(node.state[0])[0]-self.map_coords(node.goal_loc)[0])**2 + (self.map_coords(node.state[0])[1]-self.map_coords(node.goal_loc)[1])**2)**0.5
+            return ((self.map_coords[(node.state)[0]][0] - self.map_coords[self.goal_loc][0])**2  + (self.map_coords[node.state[0]][1] - self.map_coords[self.goal_loc][1])**2)**0.5
 
 class GridHunterProblem:
 
@@ -141,28 +144,28 @@ class GridHunterProblem:
             if stateList[2] == 'west':
                 i = 0
                 for monster in newmonsterCoords:
-                    for arrow in range(stateList[1],0,-1):
+                    for arrow in range(stateList[1]-1,0,-1):
                         if monster[0] == stateList[0] and monster[1] == arrow:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'east':
                 i = 0
                 for monster in newmonsterCoords:
-                    for arrow in range(stateList[1], self.N+1):
+                    for arrow in range(stateList[1]+1, self.N+1):
                         if monster[0] == stateList[0] and monster[1] == arrow:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'north':
                 i = 0
                 for monster in newmonsterCoords:
-                    for arrow in range(stateList[0], self.N+1):
+                    for arrow in range(stateList[0]+1, self.N+1):
                         if monster[0] == arrow and monster[1] == stateList[1]:
                             stateList[i+5] = True
                     i += 1
             elif stateList[2] == 'south':
                 i = 0
                 for monster in newmonsterCoords:
-                    for arrow in range(stateList[0], 0, -1):
+                    for arrow in range(stateList[0]-1, 0, -1):
                         if monster[0] == arrow and monster[1] == stateList[1]:
                             stateList[i+5] = True
                     i += 1
@@ -203,7 +206,6 @@ class GridHunterProblem:
                 stateList[3] = False
             i += 1
 
-        self.state = tuple(stateList)
         newState = tuple(stateList)
         return newState
 
@@ -225,4 +227,43 @@ class GridHunterProblem:
             for monster in coordinates:
                 if node.state[i+5] == False:
                     values.append(abs(monster[0]-node.state[0]))
+                i+=1
             return min(values)
+        
+
+
+example_map_edges = { ('R', 'D'): 410,
+                        ('R', 'H'): 620,
+                        ('R', 'J'): 950,
+                        ('R', 'A'): 950,
+                        ('D', 'B'): 110,
+                        ('H', 'B'): 940,
+                        ('H', 'T'): 680,
+                        ('B', 'T'): 1600,
+                        ('J', 'A'): 680,
+                        ('J', 'Y'): 330,
+                        ('Y', 'T'): 680
+                        }
+
+example_coords = {'A': (0,200),
+                      'B': (1250,600), 
+                      'D': (1300,550),
+                      'H': (500,850),
+                      'J': (100,450),
+                      'T': (0,1300),
+                      'R': (950,500),
+                      'Y': (50,750)
+                      }
+
+example_must_visit = ['R', 'H', 'T', 'Y']
+
+
+example_route_problem = VariantRouteProblem(initial_agent_loc='D', goal_loc='J', 
+                                                 map_edges=example_map_edges, 
+                                                 map_coords=example_coords, 
+                                                 must_visit =example_must_visit,
+                                                 K=5)
+
+example_state = ('Y', False, False, 1, True, False, False, False)
+
+print(example_route_problem.actions(example_state))
