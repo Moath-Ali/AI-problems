@@ -3,7 +3,7 @@ from problem import *
 
 class Node:
     def __init__(self,state, parent_node=None,action_from_parent=None, path_cost=0):
-        self.state = tuple(state)
+        self.state = state
         self.parent_node = parent_node
         self.action_from_parent = action_from_parent
         self.path_cost = path_cost
@@ -91,26 +91,24 @@ def get_path_states(node):
         return l
 
 def best_first_search(problem, f):
-    node = Node(state=problem.state)
-    frontier = PriorityQueue((),f)
-    frontier.add(node)
+    node = Node(state=problem.initial_state)
+    frontier = PriorityQueue(items=(node,),priority_function=f)
 
-    reached = {problem.state:node}
+    reached = {node.state:node}
     while len(frontier)>0:
         node = frontier.pop()
         if problem.is_goal(node.state):
-            
             return node
 
         for child in expand(problem,node):
             s = child.state            
-            if s not in reached.keys() or child.path_cost < reached[s].path_cost:
+            if s not in reached or child.path_cost < reached[s].path_cost:
                 reached[s] = child
                 frontier.add(child)
     return None
 
 def best_first_search_treelike(problem,f):
-    node = Node(state=problem.state)
+    node = Node(state=problem.initial_state)
     frontier = PriorityQueue((),f)
     frontier.add(node)
     while len(frontier)>0:

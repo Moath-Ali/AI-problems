@@ -10,6 +10,7 @@ class VariantRouteProblem:
         for i in must_visit:
             self.state.append(False)
         self.state = tuple(self.state)
+        self.initial_state = self.state
         
         
 
@@ -232,38 +233,3 @@ class GridHunterProblem:
         
 
 
-example_map_edges = { ('R', 'D'): 410,
-                        ('R', 'H'): 620,
-                        ('R', 'J'): 950,
-                        ('R', 'A'): 950,
-                        ('D', 'B'): 110,
-                        ('H', 'B'): 940,
-                        ('H', 'T'): 680,
-                        ('B', 'T'): 1600,
-                        ('J', 'A'): 680,
-                        ('J', 'Y'): 330,
-                        ('Y', 'T'): 680
-                        }
-
-example_coords = {'A': (0,200),
-                      'B': (1250,600), 
-                      'D': (1300,550),
-                      'H': (500,850),
-                      'J': (100,450),
-                      'T': (0,1300),
-                      'R': (950,500),
-                      'Y': (50,750)
-                      }
-
-example_must_visit = ['R', 'H', 'T', 'Y']
-
-
-example_route_problem = VariantRouteProblem(initial_agent_loc='D', goal_loc='J', 
-                                                 map_edges=example_map_edges, 
-                                                 map_coords=example_coords, 
-                                                 must_visit =example_must_visit,
-                                                 K=5)
-
-example_state = ('Y', False, False, 1, True, False, False, False)
-
-print(example_route_problem.actions(example_state))
